@@ -70,4 +70,16 @@ input {
     text-align: center;
 }
 
+.photo {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-wrap: wrap;
+}
+
+.labels
+{
+    width: 500px;
+    height: 500px;
+}
 
