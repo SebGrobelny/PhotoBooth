@@ -31,12 +31,23 @@ function readFile() {
     oReq.send(formData);
 
     var div = document.createElement('div');
+    div.setAttribute("class","photo");
     div.setAttribute("id",imgName.substr(0,imgName.length-4));
     //div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
     var textDiv = document.createElement('div');
-    textDiv.setAttribute("id",imgName.substr(0,imgName.length-4)+'text');
+    textDiv.setAttribute("id","labels");
 
     var newImageDiv = document.createElement("IMG");
+
+    var menuButton = document.createElement('div');
+    menuButton.setAttribute("id","menu");
+    var menuPath = url+"/optionsTriangle.png";
+    var menuImage = document.createElement("IMG");
+
+    menuImage.setAttribute("src",menuPath);
+
+
+
     
 
     var fr = new FileReader();
@@ -56,8 +67,15 @@ function readFile() {
     textDiv.textContent  = getLabels(imgName.substr(0,imgName.length-4));
 
     document.getElementById("photoBody").appendChild(div);
+    //append photo image to photo div
     document.getElementById(imgName.substr(0,imgName.length-4)).appendChild(newImageDiv); 
+    //append label text to photo div
     document.getElementById(imgName.substr(0,imgName.length-4)).appendChild(textDiv); 
+    //append menu to photo div
+    document.getElementById(imgName.substr(0,imgName.length-4)).appendChild(menuButton);
+    //append menu image to menu div 
+    document.getElementById("menu").appendChild(menuImage);
+
 
 }
 
