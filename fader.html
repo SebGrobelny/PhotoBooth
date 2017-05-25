@@ -3,20 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<title>Image read and display example</title>
-<!-- <link rel="stylesheet" type="text/css" href="reset.css"> -->
-<link rel="stylesheet" type="text/css" href="reset.css">
+<title>Photobooth</title>
 <link rel="stylesheet" type="text/css" href="fader.css">
 </head>
-<body>
 
-<div>
-<input type="file" id="fileSelector">
-<button id="readButton" onclick="readFile()">Display</button>
-</div>
-<img id="theImage"/>
-<button id="fadeButton" onclick="fadeImage()">Fade</button>
+<body>
+    <div id="sidebar">
+        <div>
+	<p>Upload</p>
+        <input type="file" id="fileSelector">
+        <button id="readButton" onclick="readFile()">Upload</button>
+        </div>
+	
+	<div id = "filter">
+        <p>Filter</p>
+        <input id="searchbar" type="search" placeholder=""/>
+        <button id="readButton" onclick="searchFilter()">Enter</button>
+        <button id="readButton" onclick="clearFilter()">Clear Filter</button>
+	</div>
+    </div>
+
+    <div class="main">
+        <header>
+          <p>Photobooth</p>
+        </header>
+		<div id = "photoBody">
+	</div>
+	</div>
+</body>
 
 <script src="fader.js"></script>
-</body>
 </html>
