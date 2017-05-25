@@ -6,13 +6,13 @@ function readFile() {
     var newImageDiv = document.createElement("IMG");
     console.log(selectedFile['name']);
     var imgName = selectedFile['name'];
-    console.log(imgName);
-    console.log(selectedFile);
+    //console.log(imgName);
+    //console.log(selectedFile);
 
     var fr = new FileReader();
     fr.onload = function() {
         newImageDiv.src = fr.result;
-        console.log(newImageDiv.src);
+       // console.log(newImageDiv.src);
     };
 
     //newImageDiv.src = imgName;
@@ -35,12 +35,14 @@ function readFile() {
     div.setAttribute("id",imgName.substr(0,imgName.length-4));
     //div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
     var textDiv = document.createElement('div');
-    textDiv.setAttribute("id","labels");
+    textDiv.setAttribute("class","labels");
+    textDiv.setAttribute("id","labels"+imgName.substr(0,imgName.length-4));
 
     var newImageDiv = document.createElement("IMG");
 
     var menuButton = document.createElement('div');
-    menuButton.setAttribute("id","menu");
+    menuButton.setAttribute("class","menu");
+    menuButton.setAttribute("id","menu"+imgName.substr(0,imgName.length-4));
     var menuPath = url+"/optionsTriangle.png";
     var menuImage = document.createElement("IMG");
 
@@ -53,7 +55,7 @@ function readFile() {
     var fr = new FileReader();
     fr.onload = function() {
     newImageDiv.src = fr.result;
-    console.log(newImageDiv.src);
+    //console.log(newImageDiv.src);
     }; 
     
     fr.readAsDataURL(selectedFile);
@@ -74,7 +76,7 @@ function readFile() {
     //append menu to photo div
     document.getElementById(imgName.substr(0,imgName.length-4)).appendChild(menuButton);
     //append menu image to menu div 
-    document.getElementById("menu").appendChild(menuImage);
+    document.getElementById("menu"+imgName.substr(0,imgName.length-4)).appendChild(menuImage);
 
 
 }
@@ -93,6 +95,10 @@ function fadeImage() {
     }
 }
 
+function dropDown(){
+    
+}
+
 function getLabels(imgName) {
         // construct url for query
     console.log(imgName);
@@ -100,7 +106,7 @@ function getLabels(imgName) {
     console.log(url);
         // becomes method of request object oReq
     function reqListener () {
-        var pgh = document.getElementById("labels");
+        var pgh = document.getElementById("labels"+imgName);
         pgh.textContent = this.responseText;
     }
 
