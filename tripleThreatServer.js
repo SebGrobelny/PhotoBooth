@@ -37,16 +37,20 @@ function getQueryValueFor(key, url){
 
 
 app.get('/query', function (request, response){
-    console.log("get request");
-    //console.log(request);
-    var url = request.url; //the url, like "138.68.25.50:???/query?img=hula"
-    var queryType = getQueryValueFor("type", url);
+    // console.log("get request");
+    // //console.log(request);
+     var url = request.url; //the url, like "138.68.25.50:???/query?img=hula"
+    // var queryType = getQueryValueFor("type", url);
     
-    query = request.url.split("?")[1]; // get query string
-    if(queryType == "getLabel")
+     query = request.url.split("?")[1]; // get query string
+    // if(queryType == "getLabel")
+    // {
+    //     console.log(queryType);
+    //     respondToGetLabels(url,response);
+    // }
+    if(query)
     {
-        console.log(queryType);
-        respondToGetLabels(url,response);
+        answer(query,response);
     }
 
     else {
@@ -124,76 +128,6 @@ function sendCode(code,response,message) {
     response.send(message);
 }
     
-// Stuff for dummy query answering
-// We'll replace this with a real database someday! 
-/* called when image is clicked */
-// app.get('/query', function (request, response){
-//     var url = request.url; //the url, like "138.68.25.50:???/query?img=hula"
-//     console.log(url);
-// });
-
-
-function getQueryValueFor(key, url){
-  var queryString = url.split("?")[1]; // get query string
-  //console.log(queryString);
-  var subQueries = queryString.split("&");
-
-  for(i=0; i<subQueries.length; i++){
-    var kvPair = subQueries[i].split("=");
-    if(kvPair[0]==key){
-      return kvPair[1];
-    }
-  }
-}
-
-
-//Fills the response with the lables for the image specificed in the img="imageName"
-//section of the url
-function respondToGetLabels(url,response){
-  var labelsForImage;
-  console.log("getLabelResponse with url: " + url);
-  var imageName = getQueryValueFor("img", url);
-  console.log("image name: " + imageName);
-
-  //db.serialize( function () {
-  ///// REACH OUT TO DATABASE
-  db.get(
-    'SELECT labels FROM photoLabels WHERE fileName = ?',
-    ["hula.jpg"] ,dataCallback);
-
-    //////////////////////// CALLBACKS ////////////////////////////////
-
-    function errorCallback(err) {
-        if (err) {
-             console.log("error: ",err,"\n");
-        }
-    }
-
-    function dataCallback(err, tableData) {
-        if(err){
-          console.log("error: ",err,"\n");
-        }else{
-          labelsForImage = tableData.labels;
-          console.log("got: ",tableData,"\n");
-          console.log("labels for image: ",labelsForImage,"\n");
-        }
-    }
-    ////////////////////////////////// END CALLBACKS/////////////////////
-        //db.close();
-
-    //});
-  //// END REACH OUT TO DATABASE //////////////////
-  console.log(labelsForImage);
-  if (labelsForImage) {
-    console.log("in if");
-    response.status(200);
-    response.type("text/json");
-    response.send(labelsForImage);
-  } else {
-    console.log("in else");
-    sendCode(400,response,"requested photo not found in database: " + labelsForImage);
-  }
-}
 
 
 function answer(query, response) {
