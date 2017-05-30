@@ -43,6 +43,11 @@ app.get('/query', function (request, response){
      var queryType = getQueryValueFor("op", url);
      console.log("The query type is:"+queryType);
     //query = request.url.split("?")[1]; // get query string
+    if(queryType == "rmvLabels")
+    {
+        answerRmvLabels(url,response);
+    }
+
     if(queryType == "getLabels")
     {
         //console.log(queryType);
@@ -54,18 +59,17 @@ app.get('/query', function (request, response){
         answerAddLabels(url,response);
     }
 
-    if(queryType = "dumpDB")
+    if(queryType == "dumpDB")
     {
-
+        answerDumpData(response);
     }
-    // if(query)
-    // {
-    //     answer(query,response);
+
+
+
+
+    // else {
+    // sendCode(400,response,'query not recognized');
     // }
-
-    else {
-    sendCode(400,response,'query not recognized');
-    }
 });
 
 // Case 3: upload images
@@ -111,7 +115,7 @@ app.post('/', function (request, response){
         // db.all('SELECT * FROM photoLabels',dataCallback);
         // fill-in-the-blanks syntax for Update command
         */
-    //  db.close();
+   
 
     });
         // You need to uncomment the line below when you uncomment the call
@@ -141,13 +145,6 @@ function answerGetLabels(url,response)
     'SELECT labels FROM photoLabels WHERE fileName = ?',
     [imgName],dataCallback);
 
-
-    // function errorCallback(err) {
-    //     if (err) {
-    //          console.log("error: ",err,"\n");
-    //     }
-    // }
-
     function dataCallback(err, tableData) {
         if(err){
           console.log("error: ",err,"\n");
@@ -162,19 +159,11 @@ function answerGetLabels(url,response)
           //console.log("labels for image: ",labelStr,"\n");
         }
     }
-
-    // var labels = {hula: "Dance, Performing Arts, Sports, Entertainment, Quinceañera, Event, Hula, Folk Dance",
-    //       eagle: "Bird, Beak, Bird Of Prey, Eagle, Vertebrate, Bald Eagle, Fauna, Accipitriformes, Wing",
-    //       redwoods: "Habitat, Vegetation, Natural Environment, Woodland, Tree, Forest, Green, Ecosystem, Rainforest, Old Growth Forest"};
-    // //console.log(query);
-    // var kvpair = getQueryValueFor("img",url);
-    // //var kvpair = query.split("=")[1];
-    // labelStr = labels[kvpair];
-    // console.log(labelStr);
         if (labelStr) {
-            response.status(200);
+           // response.status(200);
             response.type("text/json");
-            response.send(labelStr);
+            sendCode(200,response,labelStr);
+            //response.send(labelStr);
         } else {
             sendCode(400,response,"requested photo not found");
         }
@@ -197,6 +186,7 @@ function answerAddLabels(url, response)
     console.log("getting labels from "+imgName);
     if (err) {
             console.log("error: ",err,"\n");
+            sendCode(400,response,"error reading DB");
         } 
     else {
 
@@ -230,54 +220,134 @@ function answerAddLabels(url, response)
             console.log(err+"\n");
             sendCode(400,response,"requested photo not found");         
         } else {
-            // send a nice response back to browser
-            // sendCode(200,response,"added label "+newLabel+
-            //      " to "+imgName);
-            response.status(200);
+            console.log("here");
+           // response.status(200);
+            console.log("posted status");
             response.type("text/json");
-            response.send(labelStr);
+            console.log("posted type");
+            sendCode(200,response,labelStr);
+            //response.send(labelStr);
+            console.log("sent it");
         }
     }
     //answerGetLabels(url,response);
 
 }
 
-function answer(query, response) {
+function answerRmvLabels(url, response){
+    console.log("answerRmvLabels");
+    var newStr;
+    var imgName = getQueryValueFor("img", url);
+
+    var rmvLabel = getQueryValueFor("label", url);
+
+    db.get(
+    'SELECT labels FROM photoLabels WHERE fileName = ?',
+    [imgName],obtCallback);
+
+    function obtCallback(err,mydata) {
+    console.log("getting labels from "+imgName);
+    if (err) {
+            console.log("error: ",err,"\n");
+            sendCode(400,response,"error reading DB");
+        } 
+    else {
+
+            if(mydata.labels.length == 1)
+            {
+                mydata.labels = "";
+            }
+            else
+            {
+                mydata.labels = mydata.labels.replace(", "+rmvLabel,"")
+            }
+            
+            console.log("new labels are "+mydata.labels);
+        
+
+        newStr = mydata.labels;
+
+            // good response...so let's update labels
+              db.run(
+            'UPDATE photoLabels SET labels = ? WHERE fileName = ?',
+            [mydata.labels, imgName],
+            renewCallback);
 
 
+        }
+    }
 
-        var kvpair = query.split("=")[1];
-        console.log(kvpair);
+        // callback for db.run('UPDATE ..')
+        // Also defined inside answer so it knows about
+        // response object
+        function renewCallback(err) {
+        console.log("updating labels for "+imgName+"\n");
+        if (err) {
+            console.log(err+"\n");
+            sendCode(400,response,"requested photo not found");         
+        } else {
+            // response.status(200);
+            response.type("text/json");
+            // response.send(labelStr);
+            sendCode(200,response,newStr);
+        }
+    }
+
+}
+
+// function answerDumpData(response) {
+
+//                 console.log("dumping database");
+//                 db.all("SELECT * FROM photoLabels", dataCallback);
+
+//                 function dataCallback(err, tableData) {
+//                         if (err) {
+//                                 console.log("error: ", err, "\n");
+//                                 sendCode(400,response,"error reading DB");
+//                         }
+
+//                         else {
+//                                console.log("got: ", tableData, "\n");
+//                                 console.log("about to send");
+//                                 response.status(200);
+//                                 response.type("text/json");
+//                                 response.send(tableData);
+//                                 console.log("sent");
+//                         }
+//                 }
+
+// }
 
 
-        if (kvpair == "dumpDB") {
+function answerDumpData( response) {
+        console.log("answering the query");
+
+
+        
                 console.log("dumping database");
                 db.all("SELECT * FROM photoLabels", dataCallback);
 
                 function dataCallback(err, tableData) {
                         if (err) {
                                 console.log("error: ", err, "\n");
-                                sendCode(400,response,"error reading DB")
+                                sendCode(400,response,"error reading DB");
                         }
 
                         else {
-                               console.log("got: ", tableData, "\n");
+                                console.log("got: ", tableData, "\n");
                                 console.log("about to send");
-                                response.status(200);
                                 response.type("text/json");
-                                response.send(tableData);
+                                sendCode(200,response,tableData);
                                 console.log("sent");
+
                         }
                 }
 
-        }
-        else {
-                sendCode(400, response, "requested photo not found");
-        }
 }
 
 // sends off an HTTP response with the given status code and message
 function sendCode(code,response,message) {
+    console.log("Getting sent from sendCode with : "+message);
     response.status(code);
     response.send(message);
 }

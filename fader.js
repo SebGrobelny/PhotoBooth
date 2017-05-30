@@ -190,13 +190,11 @@ function setLabels(labelStr,imgName){
 
             document.getElementById("labels"+imgName).appendChild(labelParent);
 
-           // var rmvIconClass = document.createElement('div');
-           // rmvIconClass.setAttribute("class","removeIcon");
-           // rmvIconClass.setAttribute("id","removeIcon"+labelName);
            var rmvIcon = document.createElement("IMG");
            rmvIcon.setAttribute("src",rmvUrl);
            rmvIcon.setAttribute("class","removeIcon");
            rmvIcon.setAttribute("id","removeIcon"+labelName);
+           rmvIcon.setAttribute("onclick","removeLabels('"+imgName+","+labelName+"')");
 
            document.getElementById("labelParent_"+labelName).appendChild(label);
            document.getElementById("labelParent_"+labelName).appendChild(rmvIcon);
@@ -299,44 +297,75 @@ function addLabels(imgName)
 
 }
 
-function removeLabels(imgName)
+function removeLabels(param)
 {
-    var url = "http://138.68.25.50:7398/query?op=addLabels&img="+imgName;
+    console.log("removing labels");
+    console.log(param);
+    var substr = param.split(",")
+    var label = substr[1];
+    var imgName = substr[0];
+    //var label = document.getElementById("text"+imgName).value;
+    var url = "http://138.68.25.50:7398/query?op=rmvLabels&img="+imgName+"&label="+label;
+
+    console.log(url);
+
+    function reqListener () {
+        clearLabels(imgName);
+        //var pgh = document.getElementById("labels"+imgName);
+        setLabels(this.responseText,imgName);
+        //var currentLabels = this.responseText;
+        //var finalLabels = currentLabels+", "+label;
+
+
+
+
+    }
+
+
+
+
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+    oReq.send();
 
 }
-
-
 
 function dumpDataBase(){
     var oReq = new XMLHttpRequest();
     var url = "http://138.68.25.50:7398/query?op=dumpDB";
-
+    
     oReq.addEventListener("load", reqListener);
     oReq.open("GET", url);
-    
+
     function reqListener () {
         var dataArray = JSON.parse(this.responseText);
         addphotostoDOM(dataArray);
         console.log(dataArray);
         console.log("Success");
     }
-    
+
     oReq.send();
 }
 
 function addphotostoDOM(array) {
 
-for (var i = 0; i < array.length; i++) {
+  console.log("Print array");
+  console.log(array);
+
+  for (var i = 0; i < array.length; i++) {
     var selectedFile = array[i].fileName;
-    console.log(array); 
-    //var div = document.createElement('div');
+    //console.log(array);   
+   // var div = document.createElement('div');
+   // div.id = selectedFile;    
+
     var newImageDiv = document.createElement("IMG");
-//    newImageDiv.setAttribute('src',selectedFile);
+    newImageDiv.setAttribute('public',selectedFile);
     
 
 //    console.log(selectedFile);
     var imgName = selectedFile;
-    var imgName = imgName.substr(0,imgName.length-4);
+    //var imgName = imgName.substr(0,imgName.length-4);
     //console.log(imgName);
     //console.log(selectedFile);
 
@@ -352,11 +381,10 @@ for (var i = 0; i < array.length; i++) {
     // anonymous callback uses file as image source
    formData.append("userfile", selectedFile);
 
-
     var div = document.createElement('div');
     div.setAttribute("class","photo");
     div.setAttribute("id",imgName);
-    div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
+//    div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
     var textDiv = document.createElement('div');
     textDiv.setAttribute("class","labels");
     textDiv.setAttribute("id","labels"+imgName);
@@ -372,7 +400,7 @@ for (var i = 0; i < array.length; i++) {
 
     var menuImage = document.createElement("IMG");
 
-    menuImage.setAttribute("src",menuPath);
+    menuImage.setAttribute("src","optionsTriangle.png");
 
     var menuDropDown = document.getElementById("myDropdown");
     var menuDropDown = menuDropDown.cloneNode(true);
@@ -388,7 +416,7 @@ for (var i = 0; i < array.length; i++) {
     //console.log(newImageDiv.src);
     };
 
-    fr.readAsDataURL(selectedFile);
+    //fr.readAsDataURL(array[i].filename);
     newImageDiv.src = imgName;
     newImageDiv.setAttribute("src", newImageDiv.src);
     console.log(newImageDiv.src);
@@ -396,7 +424,7 @@ for (var i = 0; i < array.length; i++) {
     newImageDiv.setAttribute("width", "250");
     newImageDiv.setAttribute("height", "300");
 
-    textDiv.textContent  = getLabels(imgName);
+  //  textDiv.textContent  = getLabels(imgName);
 
     document.getElementById("photoBody").appendChild(div);
     document.getElementById(imgName).appendChild(overlay);
@@ -411,6 +439,5 @@ for (var i = 0; i < array.length; i++) {
     document.getElementById("menu"+imgName).appendChild(menuImage);
     document.getElementById("menu"+imgName).appendChild(menuDropDown);
 
-}
-
+  }
 }
