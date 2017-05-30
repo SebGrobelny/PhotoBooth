@@ -9,7 +9,7 @@ function readFile() {
     var newImageDiv = document.createElement("IMG");
     console.log(selectedFile['name']);
     var imgName = selectedFile['name'];
-    var imgName = imgName.substr(0,imgName.length-4);
+    //var imgName = imgName.substr(0,imgName.length-4);
     //console.log(imgName);
     //console.log(selectedFile);
 
@@ -89,11 +89,6 @@ function readFile() {
 
     //textDiv.textContent  = getLabels(imgName);
 
-
-
-
-
-
     document.getElementById("photoBody").appendChild(div);
 
     document.getElementById(imgName).appendChild(overlay);
@@ -105,33 +100,7 @@ function readFile() {
     //append label text to photo div
     document.getElementById(imgName).appendChild(textDiv);
 
-
-    
     getLabels(imgName);
-
-
-
-    // var labelStr = getLabels(imgName);
-
-    // console.log(labelStr);
-
-    // var subStr = labelStr.split(",");
-
-    // for(i = 0; i < subStr.length(); i++)
-    // {
-    //     var labelName = subStr[i];
-    //     var label = document.createElement('div');
-    //     label.setAttribute("id", labelName);
-    //     label.textContent = labelName;
-
-    //     document.getElementById("labels"+imgName).appendChild(label);
-    //    // var rmvIcon = document.createElement()
-
-    // } 
-    
-
-
- 
     
     //append menu image to menu div 
     document.getElementById("menu"+imgName).appendChild(menuImage);
@@ -242,14 +211,17 @@ function setLabels(labelStr,imgName){
     newLabel.setAttribute("class","newLabel");
     newLabel.setAttribute("id","newLabel"+imgName)
     var labelForm = document.createElement('form');
+    //labelForm.setAttribute("onSubmit","addLabels('"+imgName+"')");
 
     var formInput = document.createElement('input');
     formInput.setAttribute("type", "text");
-    formInput.setAttribute("name", imgName);
+    formInput.setAttribute("name", "text"+imgName);
+    formInput.setAttribute("id","text"+imgName);
 
     var buttonInput = document.createElement('input');
-    buttonInput.setAttribute("type","submit");
+    buttonInput.setAttribute("type","button");
     buttonInput.setAttribute("value","Add");
+    buttonInput.setAttribute("onclick","addLabels('"+imgName+"')");
     //buttonInput.setAttribute("onclick",addLabel);
 
     labelForm.appendChild(formInput);
@@ -263,12 +235,13 @@ function setLabels(labelStr,imgName){
 function getLabels(imgName) {
         // construct url for query
     console.log(imgName);
-    var url = "http://138.68.25.50:7398/query?type=getLabels&img="+imgName;
+    var url = "http://138.68.25.50:7398/query?op=getLabels&img="+imgName;
     console.log(url);
         // becomes method of request object oReq
     function reqListener () {
         //var pgh = document.getElementById("labels"+imgName);
         setLabels(this.responseText,imgName);
+        generateTags(imgName);
 
 
 
@@ -280,6 +253,59 @@ function getLabels(imgName) {
     oReq.open("GET", url);
     oReq.send();
 }
+
+function clearLabels(imgName){
+    console.log("clearLabels");
+    var myNode = document.getElementById("labels"+imgName);
+    while (myNode.firstChild) {
+        myNode.removeChild(myNode.firstChild);
+    }
+
+    //var parent = document.getElementById(imgName);
+    //parent.removeChild(myNode);
+
+}
+
+function addLabels(imgName) 
+{
+    // query looks like: op=add&img=[image filename]&label=[label to add]
+    console.log("adding labels");
+    console.log(imgName);
+    var label = document.getElementById("text"+imgName).value;
+    var url = "http://138.68.25.50:7398/query?op=addLabels&img="+imgName+"&label="+label;
+
+    console.log(url);
+
+    function reqListener () {
+        clearLabels(imgName);
+        //var pgh = document.getElementById("labels"+imgName);
+        setLabels(this.responseText,imgName);
+        //var currentLabels = this.responseText;
+        //var finalLabels = currentLabels+", "+label;
+
+
+
+
+    }
+
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+    oReq.send();
+
+
+
+    
+
+}
+
+function removeLabels(imgName)
+{
+    var url = "http://138.68.25.50:7398/query?op=addLabels&img="+imgName;
+
+}
+
+
 
 function dumpDataBase(){
     var oReq = new XMLHttpRequest();

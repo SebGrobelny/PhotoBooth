@@ -40,13 +40,23 @@ app.get('/query', function (request, response){
     // console.log("get request");
     // //console.log(request);
      var url = request.url; //the url, like "138.68.25.50:???/query?img=hula"
-     var queryType = getQueryValueFor("type", url);
+     var queryType = getQueryValueFor("op", url);
      console.log("The query type is:"+queryType);
     //query = request.url.split("?")[1]; // get query string
     if(queryType == "getLabels")
     {
         //console.log(queryType);
         answerGetLabels(url,response);
+    }
+
+    if(queryType == "addLabels")
+    {
+        answerAddLabels(url,response);
+    }
+
+    if(queryType = "dumpDB")
+    {
+
     }
     // if(query)
     // {
@@ -119,23 +129,48 @@ app.post('/', function (request, response){
 // You know what this is, right? 
 app.listen(7398);
 
-// sends off an HTTP response with the given status code and message
-function sendCode(code,response,message) {
-    response.status(code);
-    response.send(message);
-}
+
     
 function answerGetLabels(url,response)
 {
-    console.log("answering the query");
-    var labels = {hula: "Dance, Performing Arts, Sports, Entertainment, Quinceañera, Event, Hula, Folk Dance",
-          eagle: "Bird, Beak, Bird Of Prey, Eagle, Vertebrate, Bald Eagle, Fauna, Accipitriformes, Wing",
-          redwoods: "Habitat, Vegetation, Natural Environment, Woodland, Tree, Forest, Green, Ecosystem, Rainforest, Old Growth Forest"};
-    //console.log(query);
-    var kvpair = getQueryValueFor("img",url);
-    //var kvpair = query.split("=")[1];
-    labelStr = labels[kvpair];
-    console.log(labelStr);
+    console.log("answerGetLabels");
+    var labelStr;
+    var imgName = getQueryValueFor("img", url);
+
+    db.get(
+    'SELECT labels FROM photoLabels WHERE fileName = ?',
+    [imgName],dataCallback);
+
+
+    // function errorCallback(err) {
+    //     if (err) {
+    //          console.log("error: ",err,"\n");
+    //     }
+    // }
+
+    function dataCallback(err, tableData) {
+        if(err){
+          console.log("error: ",err,"\n");
+          sendCode(400,response,"error reading DB")
+        }else{
+
+          if(tableData){
+            labelStr = tableData.labels;
+            console.log("got: ",tableData,"\n");
+          }
+          
+          //console.log("labels for image: ",labelStr,"\n");
+        }
+    }
+
+    // var labels = {hula: "Dance, Performing Arts, Sports, Entertainment, Quinceañera, Event, Hula, Folk Dance",
+    //       eagle: "Bird, Beak, Bird Of Prey, Eagle, Vertebrate, Bald Eagle, Fauna, Accipitriformes, Wing",
+    //       redwoods: "Habitat, Vegetation, Natural Environment, Woodland, Tree, Forest, Green, Ecosystem, Rainforest, Old Growth Forest"};
+    // //console.log(query);
+    // var kvpair = getQueryValueFor("img",url);
+    // //var kvpair = query.split("=")[1];
+    // labelStr = labels[kvpair];
+    // console.log(labelStr);
         if (labelStr) {
             response.status(200);
             response.type("text/json");
@@ -143,6 +178,68 @@ function answerGetLabels(url,response)
         } else {
             sendCode(400,response,"requested photo not found");
         }
+}
+
+// query looks like: op=add&img=[image filename]&label=[label to add]
+function answerAddLabels(url, response)
+{
+    console.log("answerAddLabels");
+    var labelStr;
+    var imgName = getQueryValueFor("img", url);
+
+    var newLabel = getQueryValueFor("label", url);
+
+    db.get(
+    'SELECT labels FROM photoLabels WHERE fileName = ?',
+    [imgName],getCallback);
+
+    function getCallback(err,data) {
+    console.log("getting labels from "+imgName);
+    if (err) {
+            console.log("error: ",err,"\n");
+        } 
+    else {
+
+        if(data.labels == "")
+        {
+            data.labels = newLabel;
+        }
+        else
+        {
+            data.labels = data.labels+", "+newLabel
+        }
+
+        labelStr = data.labels;
+
+            // good response...so let's update labels
+            db.run(
+            'UPDATE photoLabels SET labels = ? WHERE fileName = ?',
+            [data.labels, imgName],
+            updateCallback);
+
+
+        }
+    }
+
+            // callback for db.run('UPDATE ..')
+        // Also defined inside answer so it knows about
+        // response object
+        function updateCallback(err) {
+        console.log("updating labels for "+imgName+"\n");
+        if (err) {
+            console.log(err+"\n");
+            sendCode(400,response,"requested photo not found");         
+        } else {
+            // send a nice response back to browser
+            // sendCode(200,response,"added label "+newLabel+
+            //      " to "+imgName);
+            response.status(200);
+            response.type("text/json");
+            response.send(labelStr);
+        }
+    }
+    //answerGetLabels(url,response);
+
 }
 
 function answer(query, response) {
@@ -178,4 +275,13 @@ function answer(query, response) {
                 sendCode(400, response, "requested photo not found");
         }
 }
+
+// sends off an HTTP response with the given status code and message
+function sendCode(code,response,message) {
+    response.status(code);
+    response.send(message);
+}
+
+// // show just the answer function when this file is included as a module
+// exports.answer = answer;
 
