@@ -35,9 +35,9 @@ function readFile() {
 
     oReq.send(formData);
 
-    var div = document.createElement('div');
-    div.setAttribute("class","photo");
-    div.setAttribute("id",imgName);
+    var photo = document.createElement('div');
+    photo.setAttribute("class","photo");
+    photo.setAttribute("id",imgName);
     //div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
     var textDiv = document.createElement('div');
     textDiv.setAttribute("class","labels");
@@ -88,9 +88,9 @@ function readFile() {
     newImageDiv.setAttribute("width", "250");
     newImageDiv.setAttribute("height", "300");
 
-    document.getElementById("photoBody").appendChild(div);
+    document.getElementById("photoBody").appendChild(photo);
 
-    document.getElementById(imgName).appendChild(overlay);
+    photo.appendChild(overlay);
 
     //append photo image to photo div
     document.getElementById("overlay"+imgName).appendChild(newImageDiv);
@@ -115,11 +115,6 @@ function readFile() {
 
 function createMenu(imgName)
 {
-    // <div id="myDropdown" class="dropdown-content">
-    //         <div class="change">Change Tags</div>
-    //         <div class="add">Add to Favorites</div>
-    //         <div href="#"></div>
-    // </div>
     var menuDropDown = document.createElement('div');
     menuDropDown.setAttribute("id", "dropDown"+imgName);
     menuDropDown.setAttribute("class", "dropdown-content");
@@ -158,11 +153,7 @@ function fadeImage() {
 function generatedropDown(menuDropDownId){
 
     console.log(menuDropDownId);
-   document.getElementById(menuDropDownId).classList.toggle("show");
-
-
-   
-    
+   document.getElementById(menuDropDownId).classList.toggle("show");   
 
 
 
@@ -227,8 +218,6 @@ function setLabels(labelStr,imgName){
            labelParent.appendChild(label);
            labelParent.appendChild(rmvIcon);
            //document.getElementById("removeIcon"+labelName).appendChild(rmvIcon);
-
-
 
         } 
 
@@ -418,9 +407,9 @@ function addphotostoDOM(array) {
     setLabels(oReq.responseText, imgName);
     }
 
-    var div = document.createElement('div');
-    div.setAttribute("class","photo");
-    div.setAttribute("id",imgName);
+    var photo = document.createElement('div');
+    photo.setAttribute("class","photo");
+    photo.setAttribute("id",imgName);
 //    div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
     var textDiv = document.createElement('div');
     textDiv.setAttribute("class","labels");
@@ -463,8 +452,8 @@ function addphotostoDOM(array) {
 
   //  textDiv.textContent  = getLabels(imgName);
 
-    document.getElementById("photoBody").appendChild(div);
-    document.getElementById(imgName).appendChild(overlay);
+    document.getElementById("photoBody").appendChild(photo);
+    photo.appendChild(overlay);
     //append photo image to photo div
     document.getElementById("overlay"+imgName).appendChild(newImageDiv);
     //document.getElementById(imgName).appendChild(newImageDiv);

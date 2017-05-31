@@ -206,18 +206,20 @@ function answerGetLabels(url,response)
             labelStr = tableData.labels;
             console.log("got: ",tableData,"\n");
           }
-          
-          //console.log("labels for image: ",labelStr,"\n");
-        }
-    }
-        if (labelStr) {
+
+            if (labelStr) {
            // response.status(200);
             response.type("text/json");
             sendCode(200,response,labelStr);
             //response.send(labelStr);
-        } else {
-            sendCode(400,response,"requested photo not found");
+            } else {
+                sendCode(400,response,"requested photo not found");
+            }
+          
+          //console.log("labels for image: ",labelStr,"\n");
         }
+    }
+
 }
 
 // query looks like: op=add&img=[image filename]&label=[label to add]
