@@ -20,13 +20,13 @@ app.use(express.static('public')); // serve static files from public
 //ex: getQueryValueFor(type, 138.68.25.50:???/query?img=hula&type=getLabel)
 //returns "getLabel"
 function getQueryValueFor(key, url){
-  var queryString = url.split("?")[1]; // get query string
-  console.log("Query String is : "+queryString);
+  var query = url.split("?")[1]; 
+  console.log("Query String is : "+query);
 
-  var subQueries = queryString.split("&");
+  var tag = query.split("&");
 
-  for(i=0; i<subQueries.length; i++){
-    var kvPair = subQueries[i].split("=");
+  for(i=0; i<tag.length; i++){
+    var kvPair = tag[i].split("=");
     if(kvPair[0]==key){
         console.log("Returning: "+kvPair[1]);
       return kvPair[1];
@@ -79,55 +79,106 @@ app.post('/', function (request, response){
     form.parse(request); // figures out what files are in form
 
     // callback for when a file begins to be processed
+    var filename = null;
     form.on('fileBegin', function (name, file){
-    // put it in /public
-    file.path = __dirname + '/public/' + file.name;
-    console.log("uploading ",file.name,name);
+        filename = file.name;
+        // put it in /public
+        file.path = __dirname + '/public/' + file.name;
+        console.log("uploading ",file.name,name);
 
 
 
-        function errorCallback(err) {
-            if (err) {
-                console.log("error: ",err,"\n");
+            function errorCallback(err) {
+                if (err) {
+                    console.log("error: ",err,"\n");
+                }
             }
-        }
 
-        function dataCallback(err, tableData) {
-            if (err) {
-                console.log("error: ",err,"\n");
-            } 
-        else {
-                console.log("got: ",tableData,"\n");
+            function dataCallback(err, tableData) {
+                if (err) {
+                    console.log("error: ",err,"\n");
+                } 
+            else {
+                    console.log("got: ",tableData,"\n");
+                }
             }
-        }
 
-      //  db.serialize( function () {
+          //  db.serialize( function () {
 
-        console.log("starting DB operations");
+            console.log("starting DB operations");
 
-        // Insert or replace rows into the table
-        db.run('INSERT OR REPLACE INTO photoLabels VALUES (?, "", 0)',[file.name],errorCallback);
-        db.get('SELECT labels FROM photoLabels WHERE fileName = ?', [file.name],dataCallback);
+            // Insert or replace rows into the table
+            db.run('INSERT OR REPLACE INTO photoLabels VALUES (?, "", 0)',[file.name],errorCallback);
+            db.get('SELECT labels FROM photoLabels WHERE fileName = ?', [file.name],dataCallback);
 
 
-        /* Some more examples of database commands you could try
-        // Dump whole database 
-        // db.all('SELECT * FROM photoLabels',dataCallback);
-        // fill-in-the-blanks syntax for Update command
-        */
-   
+            /* Some more examples of database commands you could try
+            // Dump whole database 
+            // db.all('SELECT * FROM photoLabels',dataCallback);
+            // fill-in-the-blanks syntax for Update command
+            */
+       
 
     });
         // You need to uncomment the line below when you uncomment the call
         // to db.serialize 
      // });
-
-    // callback for when file is fully recieved
+        // callback for when file is fully recieved
+    url = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyCT-4iY8NRGBRYvHRGCR1KyOsFSMckwN7c';
+    
+    var LIVE = true;
+    var request = require('request');
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    
     form.on('end', function (){
-    console.log('success');
-    sendCode(201,response,'recieved file');  // respond to browser
-    });
+            requestObject = {
+                "requests": [
+                {
+                "image": {
+                    "source": {"imageUri": "http://138.68.25.50:7398/" + filename}
+                    },
+                "features": [{ "type": "LABEL_DETECTION" }]
+                }
+            ]
+            }
+                
+            if (LIVE) {
+                        request(
+                           { // HTTP header stuff
+                              url: url,
+                              method: "POST",
+                              headers: {"content-type": "application/json"},
+                              // stringifies object and puts into HTTP request body as JSON 
+                              json: requestObject,
+                           },
+                        // callback function for API request
+                        APIcallback
+                        );
+                        
+                    function APIcallback(err, APIresponse, body) {
+                                if ((err) || (APIresponse.statusCode != 200)) {
+                                   console.log("Got API error"); 
+                                        console.log(body.error.message);
+                                       console.log(body.responses[0].error.message);
+                                } else {
+                                   APIresponseJSON = body.responses[0];
+                                   console.log(APIresponseJSON);
+                                
+                                        var APIlabels = '';
+                                    for (var i = 0; i < APIresponseJSON.labelAnnotations.length; i++) {
+                                        APIlabels += ', ' + APIresponseJSON.labelAnnotations[i].description;
+                                       
+                                    }
+                                     db.run('INSERT OR REPLACE INTO photoLabels VALUES (?, ?, 0)', [filename, APIlabels]);
+                                    
+                                    console.log('success');
+                                    sendCode(201,response,APIlabels);  // respond to browser
+                                    
+                                }
+                            }
+                    }
 
+        });
 });
 
 // You know what this is, right? 
@@ -295,28 +346,6 @@ function answerRmvLabels(url, response){
 
 }
 
-// function answerDumpData(response) {
-
-//                 console.log("dumping database");
-//                 db.all("SELECT * FROM photoLabels", dataCallback);
-
-//                 function dataCallback(err, tableData) {
-//                         if (err) {
-//                                 console.log("error: ", err, "\n");
-//                                 sendCode(400,response,"error reading DB");
-//                         }
-
-//                         else {
-//                                console.log("got: ", tableData, "\n");
-//                                 console.log("about to send");
-//                                 response.status(200);
-//                                 response.type("text/json");
-//                                 response.send(tableData);
-//                                 console.log("sent");
-//                         }
-//                 }
-
-// }
 
 
 function answerDumpData( response) {

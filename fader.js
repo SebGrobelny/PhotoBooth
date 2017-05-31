@@ -30,6 +30,7 @@ function readFile() {
      oReq.open("POST", url, true);
     oReq.onload = function() {
     console.log(oReq.responseText);
+    setLabels(oReq.responseText, imgName);
     }
 
     oReq.send(formData);
@@ -52,18 +53,18 @@ function readFile() {
     menuButton.setAttribute("id","menu"+imgName);
 
     var menuName = "menu"+imgName.substr(0,imgName.length-4);
-    menuButton.setAttribute("onclick","generatedropDown('"+"dropDown"+imgName+"')");
+    menuButton.setAttribute("onclick","generatedropDown('dropDown"+imgName+"')");
 
     var menuPath = url+"/optionsTriangle.png";
     var menuImage = document.createElement("IMG");
 
     menuImage.setAttribute("src",menuPath);
 
-    var menuDropDown = document.getElementById("myDropdown");
-    //clone HTML element
-    var menuDropDown = menuDropDown.cloneNode(true);
-    menuDropDown.setAttribute("id", "dropDown"+imgName);
+    //create Menu
 
+    
+    //clone HTML element
+   
     var overlay = document.createElement('div');
     overlay.setAttribute("class","overlay"); 
     overlay.setAttribute("id","overlay"+imgName);
@@ -87,15 +88,18 @@ function readFile() {
     newImageDiv.setAttribute("width", "250");
     newImageDiv.setAttribute("height", "300");
 
-    //textDiv.textContent  = getLabels(imgName);
-
     document.getElementById("photoBody").appendChild(div);
 
     document.getElementById(imgName).appendChild(overlay);
+
     //append photo image to photo div
     document.getElementById("overlay"+imgName).appendChild(newImageDiv);
     //document.getElementById(imgName).appendChild(newImageDiv);
     document.getElementById("overlay"+imgName).appendChild(menuButton); 
+
+     createMenu(imgName);
+
+    // var menuDropDown = document.getElementById("dropDown"+imgName);
 
     //append label text to photo div
     document.getElementById(imgName).appendChild(textDiv);
@@ -104,11 +108,35 @@ function readFile() {
     
     //append menu image to menu div 
     document.getElementById("menu"+imgName).appendChild(menuImage);
-    document.getElementById("menu"+imgName).appendChild(menuDropDown);
 
-    document.getElementsByClassName("change")[0].setAttribute("id","change"+imgName);
-    document.getElementsByClassName("change")[0].setAttribute("onclick","generateTags('"+imgName+"')");
-    document.getElementsByClassName("add")[0].setAttribute("id","add"+imgName);
+
+
+}
+
+function createMenu(imgName)
+{
+    // <div id="myDropdown" class="dropdown-content">
+    //         <div class="change">Change Tags</div>
+    //         <div class="add">Add to Favorites</div>
+    //         <div href="#"></div>
+    // </div>
+    var menuDropDown = document.createElement('div');
+    menuDropDown.setAttribute("id", "dropDown"+imgName);
+    menuDropDown.setAttribute("class", "dropdown-content");
+
+    var change = document.createElement('div');
+    change.setAttribute("class","change");
+    change.setAttribute("id","change"+imgName);
+    change.setAttribute("onclick","generateTags('"+imgName+"')");
+    change.textContent = "Change Tags";
+
+    var add = document.createElement('div');
+    add.setAttribute("class","add");
+    add.setAttribute("id","add"+imgName);
+    add.textContent = "Add to Favorites";
+    document.getElementById("menu"+imgName).appendChild(menuDropDown);
+    menuDropDown.appendChild(change);
+    menuDropDown.appendChild(add);
 
 
 }
@@ -181,7 +209,7 @@ function setLabels(labelStr,imgName){
             var labelName = subStr[i];
             var labelParent = document.createElement('div');
             labelParent.setAttribute("class", "labelParent");
-            labelParent.setAttribute("id","labelParent_"+labelName);
+            //labelParent.setAttribute("id","labelParent_"+labelName);
 
             var label = document.createElement('div');
             label.setAttribute("class","label");
@@ -196,8 +224,8 @@ function setLabels(labelStr,imgName){
            rmvIcon.setAttribute("id","removeIcon"+labelName);
            rmvIcon.setAttribute("onclick","removeLabels('"+imgName+","+labelName+"')");
 
-           document.getElementById("labelParent_"+labelName).appendChild(label);
-           document.getElementById("labelParent_"+labelName).appendChild(rmvIcon);
+           labelParent.appendChild(label);
+           labelParent.appendChild(rmvIcon);
            //document.getElementById("removeIcon"+labelName).appendChild(rmvIcon);
 
 
@@ -352,6 +380,7 @@ function addphotostoDOM(array) {
 
   console.log("Print array");
   console.log(array);
+  var url = "http://138.68.25.50:7398";    
 
   for (var i = 0; i < array.length; i++) {
     var selectedFile = array[i].fileName;
@@ -381,6 +410,14 @@ function addphotostoDOM(array) {
     // anonymous callback uses file as image source
    formData.append("userfile", selectedFile);
 
+    var oReq = new XMLHttpRequest();
+    
+     oReq.open("POST", url, true);
+    oReq.onload = function() {
+    console.log(oReq.responseText);
+    setLabels(oReq.responseText, imgName);
+    }
+
     var div = document.createElement('div');
     div.setAttribute("class","photo");
     div.setAttribute("id",imgName);
@@ -402,9 +439,9 @@ function addphotostoDOM(array) {
 
     menuImage.setAttribute("src","optionsTriangle.png");
 
-    var menuDropDown = document.getElementById("myDropdown");
-    var menuDropDown = menuDropDown.cloneNode(true);
-    menuDropDown.setAttribute("id", "dropDown"+imgName);
+    //var menuDropDown = document.getElementById("myDropdown");
+    //var menuDropDown = menuDropDown.cloneNode(true);
+    //menuDropDown.setAttribute("id", "dropDown"+imgName);
 
     var overlay = document.createElement('div');
     overlay.setAttribute("class","overlay");
@@ -432,12 +469,16 @@ function addphotostoDOM(array) {
     document.getElementById("overlay"+imgName).appendChild(newImageDiv);
     //document.getElementById(imgName).appendChild(newImageDiv);
     document.getElementById("overlay"+imgName).appendChild(menuButton);
+    //
+    createMenu(imgName);
     //append label text to photo div
     document.getElementById(imgName).appendChild(textDiv);
 
+     getLabels(imgName);
+
     //append menu image to menu div 
     document.getElementById("menu"+imgName).appendChild(menuImage);
-    document.getElementById("menu"+imgName).appendChild(menuDropDown);
+    //document.getElementById("menu"+imgName).appendChild(menuDropDown);
 
   }
 }
