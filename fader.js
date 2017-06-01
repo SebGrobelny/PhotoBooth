@@ -1,26 +1,86 @@
 
 var idNum = 0;
 
+function renderPhotoElements(newImageDiv, imgName )
+{
+    var url = "http://138.68.25.50:7398";  
+
+    //create photo class
+    var photo = document.createElement('div');
+    photo.setAttribute("class","photo");
+    photo.setAttribute("id",imgName);
+    //if 0 it is not a favorite, if 1 it is a favorite
+    photo.setAttribute("value", 0);
+
+    //div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
+
+    //create the main label container
+    var textDiv = document.createElement('div');
+    textDiv.setAttribute("class","labels");
+    textDiv.setAttribute("id","labels"+imgName);
+
+    
+
+    var menuButton = document.createElement('div');
+    menuButton.setAttribute("class","menu");
+    menuButton.setAttribute("id","menu"+imgName);
+
+    var menuName = "menu"+imgName.substr(0,imgName.length-4);
+    menuButton.setAttribute("onclick","generatedropDown('dropDown"+imgName+"')");
+
+    var menuPath = url+"/optionsTriangle.png";
+    var menuImage = document.createElement("IMG");
+
+    menuImage.setAttribute("src",menuPath);
+    
+    //create overlay
+    var overlay = document.createElement('div');
+    overlay.setAttribute("class","overlay"); 
+    overlay.setAttribute("id","overlay"+imgName);
+
+
+
+    newImageDiv.src = imgName;
+    newImageDiv.setAttribute("src", newImageDiv.src);
+    console.log(newImageDiv.src);
+    newImageDiv.setAttribute("alt", imgName);
+    newImageDiv.setAttribute("width", "250");
+    newImageDiv.setAttribute("height", "300");
+
+    document.getElementById("photoBody").appendChild(photo);
+
+    photo.appendChild(overlay);
+
+
+    document.getElementById("overlay"+imgName).appendChild(newImageDiv);
+    document.getElementById("overlay"+imgName).appendChild(menuButton); 
+
+    createMenu(imgName);
+    //append label text to photo div
+    document.getElementById(imgName).appendChild(textDiv);
+
+    getLabels(imgName);
+    
+    //append menu image to menu div 
+    document.getElementById("menu"+imgName).appendChild(menuImage);
+
+
+}
+
 function readFile() {
     var url = "http://138.68.25.50:7398";    
     var selectedFile = document.getElementById('fileSelector').files[0];
-
-    //var div = document.createElement('div');
-    var newImageDiv = document.createElement("IMG");
-    console.log(selectedFile['name']);
     var imgName = selectedFile['name'];
-    //var imgName = imgName.substr(0,imgName.length-4);
-    //console.log(imgName);
-    //console.log(selectedFile);
+    var newImageDiv = document.createElement("IMG");
 
     var fr = new FileReader();
     fr.onload = function() {
-        newImageDiv.src = fr.result;
-       // console.log(newImageDiv.src);
-    };
+    newImageDiv.src = fr.result;
+    //console.log(newImageDiv.src);
+    }; 
+    
+    fr.readAsDataURL(selectedFile);
 
-    //newImageDiv.src = imgName;
-  
     var formData = new FormData();
     // anonymous callback uses file as image source
     formData.append("userfile", selectedFile);
@@ -35,80 +95,7 @@ function readFile() {
 
     oReq.send(formData);
 
-    var photo = document.createElement('div');
-    photo.setAttribute("class","photo");
-    photo.setAttribute("id",imgName);
-    //div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
-    var textDiv = document.createElement('div');
-    textDiv.setAttribute("class","labels");
-    textDiv.setAttribute("id","labels"+imgName);
-
-
-
-
-    var newImageDiv = document.createElement("IMG");
-
-    var menuButton = document.createElement('div');
-    menuButton.setAttribute("class","menu");
-    menuButton.setAttribute("id","menu"+imgName);
-
-    var menuName = "menu"+imgName.substr(0,imgName.length-4);
-    menuButton.setAttribute("onclick","generatedropDown('dropDown"+imgName+"')");
-
-    var menuPath = url+"/optionsTriangle.png";
-    var menuImage = document.createElement("IMG");
-
-    menuImage.setAttribute("src",menuPath);
-
-    //create Menu
-
-    
-    //clone HTML element
-   
-    var overlay = document.createElement('div');
-    overlay.setAttribute("class","overlay"); 
-    overlay.setAttribute("id","overlay"+imgName);
-
-
-
-
-    
-
-    var fr = new FileReader();
-    fr.onload = function() {
-    newImageDiv.src = fr.result;
-    //console.log(newImageDiv.src);
-    }; 
-    
-    fr.readAsDataURL(selectedFile);
-    newImageDiv.src = imgName;
-    newImageDiv.setAttribute("src", newImageDiv.src);
-    console.log(newImageDiv.src);
-    newImageDiv.setAttribute("alt", selectedFile['name']);
-    newImageDiv.setAttribute("width", "250");
-    newImageDiv.setAttribute("height", "300");
-
-    document.getElementById("photoBody").appendChild(photo);
-
-    photo.appendChild(overlay);
-
-    //append photo image to photo div
-    document.getElementById("overlay"+imgName).appendChild(newImageDiv);
-    //document.getElementById(imgName).appendChild(newImageDiv);
-    document.getElementById("overlay"+imgName).appendChild(menuButton); 
-
-     createMenu(imgName);
-
-    // var menuDropDown = document.getElementById("dropDown"+imgName);
-
-    //append label text to photo div
-    document.getElementById(imgName).appendChild(textDiv);
-
-    getLabels(imgName);
-    
-    //append menu image to menu div 
-    document.getElementById("menu"+imgName).appendChild(menuImage);
-
+    renderPhotoElements(imgName,selectedFile);
 
 
 }
@@ -128,12 +115,50 @@ function createMenu(imgName)
     var add = document.createElement('div');
     add.setAttribute("class","add");
     add.setAttribute("id","add"+imgName);
+    add.setAttribute("onclick","addFavorite('"+imgName+"')");
     add.textContent = "Add to Favorites";
     document.getElementById("menu"+imgName).appendChild(menuDropDown);
     menuDropDown.appendChild(change);
     menuDropDown.appendChild(add);
 
 
+}
+
+function addFavorite(imgName){
+
+    //display add as remove instead append to menu 
+    var newFav = document.getElementById(imgName);
+
+    //image now gets appended to the favorites
+    newFav.setAttribute("value", 1);
+
+    //change the menu display from Add to Favorites to Unfavorite
+    var unfavorite = document.getElementById("add"+imgName);
+    unfavorite.textContent = "Unfavorite";
+    unfavorite.setAttribute("onclick","unFavorite('"+imgName+"')");
+
+}
+
+
+function unFavorite(imgName){
+
+    //display add as remove instead append to menu 
+    var newFav = document.getElementById(imgName);
+
+    //image now gets removed from favorites
+    newFav.setAttribute("value", 0);
+
+    //change the menu display from Add to Favorites to Unfavorite
+    var add = document.getElementById("add"+imgName);
+    add.textContent = "Add to Favorites";
+    add.setAttribute("onclick","addFavorite('"+imgName+"')");
+
+}
+
+function displayFavorite()
+{
+    console.log("in displayFavorite");
+    $('div[value=0]').hide();
 }
 
 function fadeImage() {
@@ -154,7 +179,6 @@ function generatedropDown(menuDropDownId){
 
     console.log(menuDropDownId);
    document.getElementById(menuDropDownId).classList.toggle("show");   
-
 
 
 }
@@ -257,10 +281,6 @@ function getLabels(imgName) {
         //var pgh = document.getElementById("labels"+imgName);
         setLabels(this.responseText,imgName);
         generateTags(imgName);
-
-
-
-
     }
 
     var oReq = new XMLHttpRequest();
@@ -298,28 +318,22 @@ function addLabels(imgName)
         //var currentLabels = this.responseText;
         //var finalLabels = currentLabels+", "+label;
 
-
-
-
     }
 
     var oReq = new XMLHttpRequest();
     oReq.addEventListener("load", reqListener);
     oReq.open("GET", url);
     oReq.send();
-
-
-
-    
-
 }
 
 function removeLabels(param)
 {
     console.log("removing labels");
     console.log(param);
-    var substr = param.split(",")
-    var label = substr[1];
+    var substr = param.split(", ");
+    var find = " ";
+    var re = new RegExp(find, 'g');
+    var label = substr[1].replace(re, "%20");
     var imgName = substr[0];
     //var label = document.getElementById("text"+imgName).value;
     var url = "http://138.68.25.50:7398/query?op=rmvLabels&img="+imgName+"&label="+label;
@@ -331,15 +345,8 @@ function removeLabels(param)
         //var pgh = document.getElementById("labels"+imgName);
         setLabels(this.responseText,imgName);
         //var currentLabels = this.responseText;
-        //var finalLabels = currentLabels+", "+label;
-
-
-
-
+        //var finalLabels = currentLabels+", "+label
     }
-
-
-
 
     var oReq = new XMLHttpRequest();
     oReq.addEventListener("load", reqListener);
@@ -368,36 +375,19 @@ function dumpDataBase(){
 function addphotostoDOM(array) {
 
   console.log("Print array");
-  console.log(array);
-  var url = "http://138.68.25.50:7398";    
-
+    
+    var url = "http://138.68.25.50:7398";  
   for (var i = 0; i < array.length; i++) {
     var selectedFile = array[i].fileName;
-    //console.log(array);   
-   // var div = document.createElement('div');
-   // div.id = selectedFile;    
+    var imgName = selectedFile;
 
     var newImageDiv = document.createElement("IMG");
-    newImageDiv.setAttribute('public',selectedFile);
     
-
-//    console.log(selectedFile);
-    var imgName = selectedFile;
-    //var imgName = imgName.substr(0,imgName.length-4);
-    //console.log(imgName);
-    //console.log(selectedFile);
-
     var fr = new FileReader();
     fr.onload = function() {
-        newImageDiv.src = fr.result;
-       // console.log(newImageDiv.src);
-    };
-
-    newImageDiv.src = imgName;
-
-   var formData = new FormData();
-    // anonymous callback uses file as image source
-   formData.append("userfile", selectedFile);
+    newImageDiv.src = fr.result;
+    //console.log(newImageDiv.src);
+    }; 
 
     var oReq = new XMLHttpRequest();
     
@@ -407,67 +397,10 @@ function addphotostoDOM(array) {
     setLabels(oReq.responseText, imgName);
     }
 
-    var photo = document.createElement('div');
-    photo.setAttribute("class","photo");
-    photo.setAttribute("id",imgName);
-//    div.setAttribute("onclick", "getLabels('"+imgName.substr(0,imgName.length-4)+"')");
-    var textDiv = document.createElement('div');
-    textDiv.setAttribute("class","labels");
-    textDiv.setAttribute("id","labels"+imgName);
 
-    var newImageDiv = document.createElement("IMG");
+    
+     renderPhotoElements(newImageDiv,imgName,);
 
-    var menuButton = document.createElement('div');
-    menuButton.setAttribute("class","menu");
-    menuButton.setAttribute("id","menu"+imgName);
-
-    var menuName = "menu"+imgName.substr(0,imgName.length-4);
-    menuButton.setAttribute("onclick","generatedropDown('"+"dropDown"+imgName+"')");
-
-    var menuImage = document.createElement("IMG");
-
-    menuImage.setAttribute("src","optionsTriangle.png");
-
-    //var menuDropDown = document.getElementById("myDropdown");
-    //var menuDropDown = menuDropDown.cloneNode(true);
-    //menuDropDown.setAttribute("id", "dropDown"+imgName);
-
-    var overlay = document.createElement('div');
-    overlay.setAttribute("class","overlay");
-    overlay.setAttribute("id","overlay"+imgName);
-
-    var fr = new FileReader();
-    fr.onload = function() {
-    newImageDiv.src = fr.result;
-    //console.log(newImageDiv.src);
-    };
-
-    //fr.readAsDataURL(array[i].filename);
-    newImageDiv.src = imgName;
-    newImageDiv.setAttribute("src", newImageDiv.src);
-    console.log(newImageDiv.src);
-    newImageDiv.setAttribute("alt", selectedFile);
-    newImageDiv.setAttribute("width", "250");
-    newImageDiv.setAttribute("height", "300");
-
-  //  textDiv.textContent  = getLabels(imgName);
-
-    document.getElementById("photoBody").appendChild(photo);
-    photo.appendChild(overlay);
-    //append photo image to photo div
-    document.getElementById("overlay"+imgName).appendChild(newImageDiv);
-    //document.getElementById(imgName).appendChild(newImageDiv);
-    document.getElementById("overlay"+imgName).appendChild(menuButton);
-    //
-    createMenu(imgName);
-    //append label text to photo div
-    document.getElementById(imgName).appendChild(textDiv);
-
-     getLabels(imgName);
-
-    //append menu image to menu div 
-    document.getElementById("menu"+imgName).appendChild(menuImage);
-    //document.getElementById("menu"+imgName).appendChild(menuDropDown);
 
   }
 }
