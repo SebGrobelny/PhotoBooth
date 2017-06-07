@@ -1,0 +1,135 @@
+/* Font imported from Google API */
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
+header {
+  display: flex;
+  flex-direction: column;
+}
+body {
+	font-family: 'Josefin Sans', sans-serif;
+	min-height: 100vh; 
+
+	/* Flex Properties */
+	display: flex;
+	flex-direction: column;
+}
+
+#aroundMain {
+	border: 2px solid red;
+	padding: 10px;
+
+	/* Flex Properties */
+	display: flex;
+	flex-grow: 1;  /* absorbs all extra space */
+}
+
+main {
+    border: 2px solid #1a96db;
+
+    /* Flex Properties */
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.main-container {
+
+	margin: 5px;
+
+	/* Flex Properties */
+	display: flex;
+	justify-content: center; /* align horizontal */
+	align-items: center; /* align vertical */
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+/* Separate nav bar and photo gallery */
+.main-container:nth-child(1) {
+		flex: 20 30px;
+}
+.image {
+  border: 2px solid red;
+}
+.picture {
+
+}
+
+
+/* Navbar styling */
+#navbar {
+    border: 2px solid #1a96db;
+    padding: 15px;
+	/* Flex Properties */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.sidebar {
+	height: 20px;
+	width: 20px;
+}
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+.inputfile + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: black;
+    display: inline-block;
+    max-width: 80%;
+    font-size: 1.25rem;
+    /* 20px */
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    padding: 0.625rem 1.25rem;
+    /* 10px 20px */
+}
+
+.inputfile:focus + label,
+.inputfile + label:hover {
+    color: red;
+}
+input#search {
+  	background: white;
+  	border: 1px solid black;
+  	width: 160px;
+  	height: 30px;
+  	padding-left: 10px;
+	-webkit-border-radius: 14px;
+  	-moz-border-radius: 14px;
+  	border-radius: 14px;
+}
+
+button#uploadButton {
+	background: white;
+	color: black;
+  	width: 35px;
+  	height: 25px;
+  	border: 1px solid black;
+	-webkit-border-radius: 12px;
+  	-moz-border-radius: 12px;
+  	border-radius: 12px;
+  	display: block;
+  	margin: 0 auto;
+}
+
+
+
+
+
+
+
+header,footer {
+       border: 2px solid #2296db;
+       text-align: center;
+       padding: 10px;
+}

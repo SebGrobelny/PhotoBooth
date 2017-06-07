@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Photobooth</title>
+<link rel="stylesheet" type="text/css" href="fader.css">
+</head>
+
+<body onload = "dumpDataBase()" >
+    <div id="sidebar">
+        <div id = "upload">
+    	    <p>Upload</p>
+            <input type="file" id="fileSelector">
+            <button id="readButton" onclick="readFile()">Upload</button>
+        </div>
+    	
+    	<div id = "filter">
+            <p>Filter</p>
+            <input id="searchbar" type="search" placeholder=""/>
+            <button id="readButton" onclick="searchFilter()">Enter</button>
+            <button id="readButton" onclick="clearFilter()">Clear Filter</button>
+    	</div>
+        
+        <div id = "favorites">
+            <p>Favorites</p>
+            <button id="readButton" onclick="displayFavorites()">Display Favorites</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <header>
+          <p>Photobooth</p>
+        </header>
+        <div class = "mobile_icons">
+            <div><img src = "uploadIcon-01.png"></div>
+            <div><img src = "filterIcon-01.png"></div>
+            <div><img src = "favoritesIcon.png"></div>
+        </div>
+		<div id = "photoBody">
+	</div>
+	</div>
+
+    
+</body>
+
+<script src="fader.js"></script>
+</html>

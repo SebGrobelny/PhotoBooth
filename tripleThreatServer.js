@@ -38,7 +38,7 @@ function getQueryValueFor(key, url){
 
 app.get('/query', function (request, response){
     // console.log("get request");
-    // //console.log(request);
+    console.log(request);
      var url = request.url; //the url, like "138.68.25.50:???/query?img=hula"
      var queryType = getQueryValueFor("op", url);
      console.log("The query type is:"+queryType);
@@ -64,12 +64,25 @@ app.get('/query', function (request, response){
         answerDumpData(response);
     }
 
+    if( queryType == "postFavorite")
+    {
+        console.log("posting to favorite");
+        answerPostFavorite(url, response);
+    }
+
+    if (queryType == "dumpFavorite")
+    {
+        console.log("posting to favorite");
+        answerDumpFavorite(response);
+    }
+
+    if (queryType == "filter")
+    {
+        console.log("posting to favorite");
+        answerFilter(url, response);
+    }
 
 
-
-    // else {
-    // sendCode(400,response,'query not recognized');
-    // }
 });
 
 // Case 3: upload images
@@ -294,6 +307,8 @@ function answerRmvLabels(url, response){
 
     var rmvLabel = getQueryValueFor("label", url);
 
+    console.log(rmvLabel);
+
     db.get(
     'SELECT labels FROM photoLabels WHERE fileName = ?',
     [imgName],obtCallback);
@@ -312,6 +327,12 @@ function answerRmvLabels(url, response){
             }
             else
             {
+                //convert from http to normal text 
+                var find = "%20";
+                var re = new RegExp(find, 'g');
+                var rmvLabel = rmvLabel.replace(re, " ");
+                console.log(rmvLabel);
+
                 mydata.labels = mydata.labels.replace(", "+rmvLabel,"")
             }
             
@@ -351,7 +372,7 @@ function answerRmvLabels(url, response){
 
 
 function answerDumpData( response) {
-        console.log("answering the query");
+        console.log("taking a dump");
 
 
         
@@ -376,9 +397,101 @@ function answerDumpData( response) {
 
 }
 
+function answerDumpFavorite(response) {
+        console.log("taking a favorite dump");
+
+
+        
+                console.log("dumping database");
+                db.all("SELECT * FROM photoLabels WHERE favorite = ?",1, dataCallback);
+
+                function dataCallback(err, tableData) {
+                        if (err) {
+                                console.log("error: ", err, "\n");
+                                sendCode(400,response,"error reading DB");
+                        }
+
+                        else {
+                                console.log("got: ", tableData, "\n");
+                                console.log("about to send");
+                                response.type("text/json");
+                                sendCode(200,response,tableData);
+                                console.log("sent");
+
+                        }
+                }
+
+}
+
+
+function answerPostFavorite(url, response){
+
+    var imgName = getQueryValueFor("img", url);
+
+        db.get(
+    'SELECT labels FROM photoLabels WHERE fileName = ?',
+    [imgName],getCallback);
+
+           function getCallback(err,data) {
+    console.log("getting labels from "+imgName);
+    if (err) {
+            console.log("error: ",err,"\n");
+            sendCode(400,response,"error reading DB");
+        } 
+    else {
+
+            // good response...so let's update labels
+            db.run(
+            'UPDATE photoLabels SET favorite = ? WHERE fileName = ?',
+            [1, imgName],
+            renewCallback);
+
+
+        }
+    }
+
+            function renewCallback(err) {
+            console.log("updating labels for "+imgName+"\n");
+            if (err) {
+                console.log(err+"\n");
+                sendCode(400,response,"requested photo not found");         
+            }
+            sendCode(200,response, "");
+        }
+
+
+
+}
+
+function answerFilter(url, response)
+{
+    var label = getQueryValueFor("label", url);
+
+        db.all(
+    'SELECT * FROM photoLabels WHERE labels LIKE ?',
+    [label],dataCallback);
+
+                function dataCallback(err, tableData) {
+                if (err) {
+                        console.log("error: ", err, "\n");
+                        sendCode(400,response,"error reading DB");
+                }
+
+                else {
+                        console.log("got: ", tableData, "\n");
+                        console.log("about to send");
+                        response.type("text/json");
+                        sendCode(200,response,tableData);
+                        console.log("sent");
+
+                }
+        }
+
+}
+
 // sends off an HTTP response with the given status code and message
 function sendCode(code,response,message) {
-    console.log("Getting sent from sendCode with : "+message);
+    //console.log("Getting sent from sendCode with : "+message);
     response.status(code);
     response.send(message);
 }

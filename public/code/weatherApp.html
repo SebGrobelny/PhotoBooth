@@ -1,0 +1,211 @@
+<!--
+Beginning of Weather App
+
+Also requires files:
+	weatherApp.js
+-->
+
+<html>
+<head>
+<!-- 	<meta charset="UTF-8"> -->
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<meta name="viewport" content="width=device-width"> 
+	<title>Weather App</title>
+	<link rel="stylesheet" type="text/css" href="weatherApp.css"></link>
+	<script src="weatherApp.js"> </script>
+
+</head>
+
+<!-- onload="init();" -->
+<body onload="init();">
+	<div id = "header">
+		<div id = "mainCity">
+			<div id = "mainDate">
+				<div id = "mainDate1">
+					<div class = "mainTime"> </div>
+					<div class = "mainMonth"> </div>
+				</div>
+				<div id = "mainDate2">
+					<img id = "img" ></img>
+				</div>
+			</div>
+			
+			<div id = "mainInfo">
+				<div class = "mainTown"> </div>
+				<div class = "mainTempContain">
+					<div class = "mainTemp"> </div>
+				</div>
+				<div class = "mainText"> </div>
+			</div>
+
+		</div>		
+		<div id = "searchBox">
+			<input id="zipbox" type="text" placeholder="enter zip">
+			<button onclick="gotNewPlace()">submit</button>
+		</div>	
+	</div>
+
+
+	</div>
+	<div id="range" >
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img0"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img1"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img2"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img3"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img4"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img5"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img6"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img7"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+					
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+
+				<img id = "img8"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "high"></div>
+					
+					<div class = "low"></div>
+
+				</div>
+			</div>
+
+			<div class="stepper">
+				<div class="date"></div>
+				<img id = "img9"></img>
+				<div class = "text"></div>
+				<div class = "tempContain">
+					<div class = "tempHigh">
+						<div class = "high"></div>
+					</div>
+					<div class = "tempLow">
+						<div class = "low"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+ <div id="mobileStep">
+    		<div class="mobileDate"></div>
+			<img id = "mobileImg"></img>
+			<div class = "mobileText"></div>
+			<div class = "tempContain">
+				<div class = "mobileHigh"></div>
+				
+				<div class = "mobileLow"></div>
+				
+
+				</div>
+</div>
+</body>
+
+	<div id = "buttons">
+		
+		<div id ="left">
+			<input type="image" src="./WeatherApp/arrow-left.png" onclick="goLeft()"/>
+			<div class= "forecastText"> previous forecasts </div>
+		 	<!-- <p> previous forecasts </p>  -->
+		</div>
+
+		<div id="yahoo">
+			<img id= "yahooimg" src="./YahooAcknowledgment.jpg"></img>
+		</div>
+
+
+
+		<div id = "right">
+		 	<!-- <p>  next forecasts </p>  -->
+		 	<div class= "forecastText"> more forecasts </div>
+			<input type="image" src="./WeatherApp/arrow-right.png" onclick="goRight()"/>
+		</div>
+
+	</div>
+
+</html>
