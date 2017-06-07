@@ -141,34 +141,25 @@ function addFavorite(imgName){
     oReq.open("GET", url);
     oReq.send();
 
-    // //display add as remove instead append to menu 
-    // var newFav = document.getElementById(imgName);
-
-    // //image now gets appended to the favorites
-    // newFav.setAttribute("value", 1);
-
-    // //change the menu display from Add to Favorites to Unfavorite
-    // var unfavorite = document.getElementById("add"+imgName);
-    // unfavorite.textContent = "Unfavorite";
-    // unfavorite.setAttribute("onclick","unFavorite('"+imgName+"')");
-
-
-
 }
 
 
 function unFavorite(imgName){
 
-    // //display add as remove instead append to menu 
-    // var newFav = document.getElementById(imgName);
+    var url = "http://138.68.25.50:7398/query?op=unFavorite&img="+imgName;
+    console.log(url);
 
-    // //image now gets removed from favorites
-    // newFav.setAttribute("value", 0);
+    function reqListener () {
+        //var pgh = document.getElementById("labels"+imgName);
+        // setLabels(this.responseText,imgName);
+        // generateTags(imgName);
+    }
 
-    // //change the menu display from Add to Favorites to Unfavorite
-    // var add = document.getElementById("add"+imgName);
-    // add.textContent = "Add to Favorites";
-    // add.setAttribute("onclick","addFavorite('"+imgName+"')");
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+    oReq.send();
+
 
 }
 
@@ -386,7 +377,7 @@ function searchFilter()
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
             }
-
+            console.log("Found Filter: " +this.responseText);
         var dataArray = JSON.parse(this.responseText);
         addphotostoDOM(dataArray);
         console.log(dataArray);
@@ -409,6 +400,12 @@ function clearFilter()
     oReq.open("GET", url);
 
     function reqListener () {
+        var myNode = document.getElementById("photoBody");
+
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+            }
+
         var dataArray = JSON.parse(this.responseText);
         addphotostoDOM(dataArray);
         console.log(dataArray);

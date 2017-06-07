@@ -25,7 +25,7 @@ function renderPhotoElements(newImageDiv, imgName )
     menuButton.setAttribute("class","menu");
     menuButton.setAttribute("id","menu"+imgName);
 
-    var menuName = "menu"+imgName.substr(0,imgName.length-4);
+    var menuName = "menu"+imgName;
     menuButton.setAttribute("onclick","generatedropDown('dropDown"+imgName+"')");
 
     var menuPath = url+"/optionsTriangle.png";
@@ -41,8 +41,8 @@ function renderPhotoElements(newImageDiv, imgName )
 
 
     newImageDiv.src = imgName;
-    newImageDiv.setAttribute("src", newImageDiv.src);
-    console.log(newImageDiv.src);
+    // newImageDiv.setAttribute("src", newImageDiv.src);
+    // console.log(newImageDiv.src);
     newImageDiv.setAttribute("alt", imgName);
     newImageDiv.setAttribute("width", "250");
     newImageDiv.setAttribute("height", "300");
@@ -126,32 +126,40 @@ function createMenu(imgName)
 
 function addFavorite(imgName){
 
-    //display add as remove instead append to menu 
-    var newFav = document.getElementById(imgName);
+    var url = "http://138.68.25.50:7398/query?op=postFavorite&img="+imgName;
+    console.log(url);
 
-    //image now gets appended to the favorites
-    newFav.setAttribute("value", 1);
 
-    //change the menu display from Add to Favorites to Unfavorite
-    var unfavorite = document.getElementById("add"+imgName);
-    unfavorite.textContent = "Unfavorite";
-    unfavorite.setAttribute("onclick","unFavorite('"+imgName+"')");
+    function reqListener () {
+        //var pgh = document.getElementById("labels"+imgName);
+        // setLabels(this.responseText,imgName);
+        // generateTags(imgName);
+    }
+
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+    oReq.send();
 
 }
 
 
 function unFavorite(imgName){
 
-    //display add as remove instead append to menu 
-    var newFav = document.getElementById(imgName);
+    var url = "http://138.68.25.50:7398/query?op=unFavorite&img="+imgName;
+    console.log(url);
 
-    //image now gets removed from favorites
-    newFav.setAttribute("value", 0);
+    function reqListener () {
+        //var pgh = document.getElementById("labels"+imgName);
+        // setLabels(this.responseText,imgName);
+        // generateTags(imgName);
+    }
 
-    //change the menu display from Add to Favorites to Unfavorite
-    var add = document.getElementById("add"+imgName);
-    add.textContent = "Add to Favorites";
-    add.setAttribute("onclick","addFavorite('"+imgName+"')");
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+    oReq.send();
+
 
 }
 
@@ -296,9 +304,6 @@ function clearLabels(imgName){
         myNode.removeChild(myNode.firstChild);
     }
 
-    //var parent = document.getElementById(imgName);
-    //parent.removeChild(myNode);
-
 }
 
 function addLabels(imgName) 
@@ -330,9 +335,12 @@ function removeLabels(param)
 {
     console.log("removing labels");
     console.log(param);
+
     var substr = param.split(", ");
     var find = " ";
     var re = new RegExp(find, 'g');
+
+
     var label = substr[1].replace(re, "%20");
     var imgName = substr[0];
     //var label = document.getElementById("text"+imgName).value;
@@ -353,6 +361,83 @@ function removeLabels(param)
     oReq.open("GET", url);
     oReq.send();
 
+}
+
+function searchFilter()
+{
+ 
+    var label = document.getElementById("searchbar").value;
+    var url = "http://138.68.25.50:7398/query?op=filter&label="+label;
+
+    console.log(url);
+
+    function reqListener () {
+        var myNode = document.getElementById("photoBody");
+
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+            }
+            console.log("Found Filter: " +this.responseText);
+        var dataArray = JSON.parse(this.responseText);
+        addphotostoDOM(dataArray);
+        console.log(dataArray);
+        console.log("Success");
+
+    }
+
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+    oReq.send();
+}
+
+function clearFilter()
+{
+    var oReq = new XMLHttpRequest();
+    var url = "http://138.68.25.50:7398/query?op=dumpDB";
+    
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+
+    function reqListener () {
+        var myNode = document.getElementById("photoBody");
+
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+            }
+
+        var dataArray = JSON.parse(this.responseText);
+        addphotostoDOM(dataArray);
+        console.log(dataArray);
+        console.log("Success");
+    }
+
+    oReq.send();
+
+
+}
+
+function displayFavorites(){
+    var oReq = new XMLHttpRequest();
+    var url = "http://138.68.25.50:7398/query?op=dumpFavorite";
+    
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", url);
+
+    function reqListener () {
+        var myNode = document.getElementById("photoBody");
+
+    while (myNode.firstChild) {
+        myNode.removeChild(myNode.firstChild);
+        }
+
+        var dataArray = JSON.parse(this.responseText);
+        addphotostoDOM(dataArray);
+        console.log(dataArray);
+        console.log("Success");
+    }
+
+    oReq.send();
 }
 
 function dumpDataBase(){

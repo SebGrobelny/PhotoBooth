@@ -70,6 +70,12 @@ app.get('/query', function (request, response){
         answerPostFavorite(url, response);
     }
 
+    if( queryType == "unFavorite")
+    {
+        console.log("posting to favorite");
+        answerUnFavorite(url, response);
+    }
+
     if (queryType == "dumpFavorite")
     {
         console.log("posting to favorite");
@@ -423,6 +429,46 @@ function answerDumpFavorite(response) {
 
 }
 
+function answerUnFavorite(url, response)
+{
+    var imgName = getQueryValueFor("img", url);
+
+        db.get(
+    'SELECT labels FROM photoLabels WHERE fileName = ?',
+    [imgName],getCallback);
+
+           function getCallback(err,data) {
+    console.log("getting labels from "+imgName);
+    if (err) {
+            console.log("error: ",err,"\n");
+            sendCode(400,response,"error reading DB");
+        } 
+    else {
+
+            // good response...so let's update labels
+            db.run(
+            'UPDATE photoLabels SET favorite = ? WHERE fileName = ?',
+            [0, imgName],
+            renewCallback);
+
+
+        }
+    }
+
+            function renewCallback(err) {
+            console.log("updating labels for "+imgName+"\n");
+            if (err) {
+                console.log(err+"\n");
+                sendCode(400,response,"requested photo not found");         
+            }
+            sendCode(200,response, "");
+        }
+
+
+
+
+}
+
 
 function answerPostFavorite(url, response){
 
@@ -468,26 +514,65 @@ function answerFilter(url, response)
     var label = getQueryValueFor("label", url);
 
         db.all(
-    'SELECT * FROM photoLabels WHERE labels LIKE ?',
-    [label],dataCallback);
+    'SELECT * FROM photoLabels', dataCallback);
 
                 function dataCallback(err, tableData) {
-                if (err) {
+                    if (err)
+                    {
                         console.log("error: ", err, "\n");
                         sendCode(400,response,"error reading DB");
-                }
-
-                else {
+                    }
+                    
+                    else
+                    {
+                        var keys = [];
+                        var foundLabel = 0;
                         console.log("got: ", tableData, "\n");
-                        console.log("about to send");
-                        response.type("text/json");
-                        sendCode(200,response,tableData);
-                        console.log("sent");
+                        for (var key in tableData)
+                        {
+                            console.log("got: ", tableData[key].labels, "\n");
+                                if(tableData[key].labels.includes(label))
+                                {
+                                    console.log("got: ", tableData[key], "\n");
+                                    console.log("about to send");
+                                    console.log("Pushing Key"+key);
+                                    keys.push(key);
+                                    foundLabel = 1;
+                                }
 
-                }
+
+                        }
+
+                        if(foundLabel == 0) {
+                            console.log("error: ", err, "\n");
+                            sendCode(400,response,"Cannot find label");
+                        }
+
+                        if(foundLabel == 1)
+                        {
+                            //create dictionary to send back
+                            var newTableData =[];
+                            for (var i = 0; i < keys.length; i++)
+                            {
+                                newTableData.push(tableData[keys[i]]) ;
+                            }
+                            console.log(newTableData);
+
+                            response.type("text/json");
+                            sendCode(200,response,newTableData);
+                            console.log("sent");
+                        }
+
+
+
+
+                    }
+
+
         }
 
 }
+
 
 // sends off an HTTP response with the given status code and message
 function sendCode(code,response,message) {
