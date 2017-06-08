@@ -9,38 +9,48 @@
 
 <body onload = "dumpDataBase()" >
     <div id="sidebar">
-        <div id = "upload">
-    	    <p>Upload</p>
+        <div>
+           <p>Upload</p>
             <input type="file" id="fileSelector">
             <button id="readButton" onclick="readFile()">Upload</button>
         </div>
-    	
-    	<div id = "filter">
-            <p>Filter</p>
-            <input id="searchbar" type="search" placeholder=""/>
-            <button id="readButton" onclick="searchFilter()">Enter</button>
-            <button id="readButton" onclick="clearFilter()">Clear Filter</button>
-    	</div>
-        
+    
+        <div id = "filter">
+           <p>Filter</p>
+           <input id="searchbar" type="search" placeholder=""/>
+           <button id="readButton" onclick="searchFilter()">Enter</button>
+           <button id="readButton" onclick="clearFilter()">Clear Filter</button>
+        </div>
+    
         <div id = "favorites">
             <p>Favorites</p>
             <button id="readButton" onclick="displayFavorites()">Display Favorites</button>
         </div>
     </div>
-
+    
     <div class="main">
         <header>
           <p>Photobooth</p>
         </header>
+        
         <div class = "mobile_icons">
-            <div><img src = "uploadIcon-01.png"></div>
-            <div><img src = "filterIcon-01.png"></div>
-            <div><img src = "favoritesIcon.png"></div>
+        <button onclick = "uploadExpand()" id = "upload"></button>
+        <div id = "upload1">
+            <input type="file" id="fileSelector">
+            <button id="readButton" onclick="readFile()">Upload</button>
         </div>
-		<div id = "photoBody">
-	</div>
-	</div>
-
+            
+        <button onclick = "filterExpand()" id = "filter"></button>
+        <div id = "filter1">
+            <input id="searchbar" type="search" placeholder="......">
+            <button id="readButton" onclick="searchFilter()">Enter</button>
+            <button id="readButton" onclick="clearFilter()">Clear Filter</button>
+        </div>
+            
+            <div><button id="readButton" onclick="displayFavorites()"><img src = "favoritesIcon.png"></button></div>
+        </div>
+        <div id = "photoBody"></div>
+    </div>
     
 </body>
 

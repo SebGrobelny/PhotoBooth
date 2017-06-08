@@ -261,26 +261,44 @@ function answerAddLabels(url, response)
             sendCode(400,response,"error reading DB");
         } 
     else {
+        console.log("here"+data.labels);
+        var array = JSON.parse("[" + data.labels + "]")
+        console.log("after");
 
-        if(data.labels == "")
+        if (array.length < 11)
         {
-            data.labels = newLabel;
+                    if(data.labels == "")
+                    {
+                        data.labels = newLabel;
+                    }
+                     else
+                    {
+                        data.labels = data.labels+", "+newLabel
+                    }
+
+                    labelStr = data.labels;
+
+                        // good response...so let's update labels
+                        db.run(
+                        'UPDATE photoLabels SET labels = ? WHERE fileName = ?',
+                        [data.labels, imgName],
+                        updateCallback);
+
+
         }
+
         else
         {
-            data.labels = data.labels+", "+newLabel
+            console.log("error: ",err,"\n");
+            sendCode(400,response,"cannot add more labels");
+
         }
 
-        labelStr = data.labels;
-
-            // good response...so let's update labels
-            db.run(
-            'UPDATE photoLabels SET labels = ? WHERE fileName = ?',
-            [data.labels, imgName],
-            updateCallback);
 
 
         }
+
+
     }
 
             // callback for db.run('UPDATE ..')
@@ -305,6 +323,9 @@ function answerAddLabels(url, response)
     //answerGetLabels(url,response);
 
 }
+function hasWhiteSpace(s) {
+  return s.indexOf('%20') >= 0;
+}
 
 function answerRmvLabels(url, response){
     console.log("answerRmvLabels");
@@ -312,8 +333,20 @@ function answerRmvLabels(url, response){
     var imgName = getQueryValueFor("img", url);
 
     var rmvLabel = getQueryValueFor("label", url);
+    console.log("removing label"+rmvLabel);
 
-    console.log(rmvLabel);
+
+    if(hasWhiteSpace(rmvLabel) )
+    {
+        //convert from http to normal text 
+        var find = "%20";
+        var re = new RegExp(find, 'g');
+        var rmvLabel = rmvLabel.replace(re, " ");
+        console.log(rmvLabel);
+
+    }
+
+
 
     db.get(
     'SELECT labels FROM photoLabels WHERE fileName = ?',
@@ -327,17 +360,20 @@ function answerRmvLabels(url, response){
         } 
     else {
 
+        console.log("got labels "+mydata.labels);
             if(mydata.labels.length == 1)
             {
                 mydata.labels = "";
             }
             else
             {
+                    console.log("in obtCallback"+rmvLabel);
+
                 //convert from http to normal text 
-                var find = "%20";
-                var re = new RegExp(find, 'g');
-                var rmvLabel = rmvLabel.replace(re, " ");
-                console.log(rmvLabel);
+                // var find = "%20";
+                // var re = new RegExp(find, 'g');
+                // var rmvLabel = rmvLabel.replace(re, " ");
+                // console.log(rmvLabel);
 
                 mydata.labels = mydata.labels.replace(", "+rmvLabel,"")
             }

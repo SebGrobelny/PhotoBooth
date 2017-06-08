@@ -76,11 +76,12 @@ function readFile() {
     var fr = new FileReader();
     fr.onload = function() {
     newImageDiv.src = fr.result;
+    newImageDiv.style.opacity = 0.5;
     //console.log(newImageDiv.src);
     }; 
     
     fr.readAsDataURL(selectedFile);
-
+    newImageDiv.style.opacity = 1.0;
     var formData = new FormData();
     // anonymous callback uses file as image source
     formData.append("userfile", selectedFile);
@@ -220,25 +221,27 @@ function generateTags(imgName)
 
    for( i=0; i < removeLength; i++)
    {
-       // label.getElementsByClassName("removeIcon")[i].toggle("show");
+     console.log("in for");
 
-        if (label.getElementsByClassName("removeIcon")[i].style.display === 'none') {
-        label.getElementsByClassName("removeIcon")[i].style.display = 'block';
+        if (label.getElementsByClassName("removeIcon")[i].style.display === 'block' ||  label.getElementsByClassName("removeIcon")[i].style.display === '') {
+            console.log("in if");
+        label.getElementsByClassName("removeIcon")[i].style.display = 'none';
         } 
     else {
-        label.getElementsByClassName("removeIcon")[i].style.display = 'none';
+        console.log("in else");
+        label.getElementsByClassName("removeIcon")[i].style.display = 'block';
     }
    }
 
    var newlabelID = "newLabel"+imgName;
    console.log(newlabelID);
-   if( document.getElementById(newlabelID).style.display === 'none')
+   if( document.getElementById(newlabelID).style.display === 'block' || document.getElementById(newlabelID).style.display === '')
    {
-        document.getElementById(newlabelID).style.display = 'block';
+        document.getElementById(newlabelID).style.display = 'none';
    }
    else
    {
-        document.getElementById(newlabelID).style.display = 'none';
+        document.getElementById(newlabelID).style.display = 'block';
    }
 }
 
@@ -515,4 +518,28 @@ function addphotostoDOM(array) {
 
 
   }
+}
+
+function uploadExpand() {
+    var uploadbox = document.getElementById("upload1");
+    if (upload == 0) {
+        uploadbox.style.display = "block";
+        upload = 1;
+    }
+    else {
+        uploadbox.style.display = "none";
+        upload = 0;
+    }
+}
+
+
+function filterExpand(){
+   var filterbox = document.getElementById("filter1");
+    if(filter === 0){
+        filterbox.style.display = "block";
+       filter = 1;
+   }else{
+       filterbox.style.display = "none";
+       filter = 0;
+   } 
 }
