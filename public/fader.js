@@ -124,10 +124,28 @@ function createMenu(imgName)
 
 }
 
+
+function changeUnFavorite(imgName)
+{
+    var add = document.getElementById("add"+imgName);
+    add.setAttribute("onclick","unFavorite('"+imgName+"')");
+    add.textContent = "Unfavorite";
+}
+
+function changeAddFavorite(imgName)
+{
+    var add = document.getElementById("add"+imgName);
+    add.setAttribute("onclick","addFavorite('"+imgName+"')");
+    add.textContent = "Add to Favorites";
+}
+
+
 function addFavorite(imgName){
 
     var url = "http://138.68.25.50:7398/query?op=postFavorite&img="+imgName;
     console.log(url);
+
+    changeUnFavorite(imgName);
 
 
     function reqListener () {
@@ -148,6 +166,7 @@ function unFavorite(imgName){
 
     var url = "http://138.68.25.50:7398/query?op=unFavorite&img="+imgName;
     console.log(url);
+    changeAddFavorite(imgName);
 
     function reqListener () {
         //var pgh = document.getElementById("labels"+imgName);
@@ -433,6 +452,13 @@ function displayFavorites(){
 
         var dataArray = JSON.parse(this.responseText);
         addphotostoDOM(dataArray);
+
+        //add UnFavorite function to all of the favorited ones
+        for (var i = 0; i < dataArray.length; i++)
+        {
+            var imgName = dataArray[i].fileName;
+            changeUnFavorite(imgName);
+        }
         console.log(dataArray);
         console.log("Success");
     }
@@ -485,6 +511,7 @@ function addphotostoDOM(array) {
 
     
      renderPhotoElements(newImageDiv,imgName,);
+
 
 
   }
