@@ -1,0 +1,33 @@
+p {
+    color: saddlebrown;
+    text-align: center;
+}
+
+button.enter {
+    background-color: saddlebrown;
+    border: none;
+    color: #fff;
+    padding: 5;
+    padding-right: 8;
+    padding-left: 8;
+    font-size: medium;
+    text-align: center;
+}
+
+#button {
+    text-align: center;
+}
+
+#welcome {
+    text-align: center;
+    font-size: 50px;
+}
+
+body {
+    padding-top: 10%;
+}
+
+#credits{
+    padding-top: 20%;
+    font-size: 20px;
+}
